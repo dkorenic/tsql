@@ -1,4 +1,4 @@
-﻿--DROP LOGIN CLRLogin;
+--DROP LOGIN CLRLogin;
 --DROP ASYMMETRIC KEY CLRLog;
 
 --DROP PROC net.httpRequest
