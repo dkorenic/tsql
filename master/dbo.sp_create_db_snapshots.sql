@@ -5,7 +5,7 @@ SET QUOTED_IDENTIFIER ON;
 GO
 
 
-CREATE PROC dbo.sp_create_db_snapshots
+ALTER PROC dbo.sp_create_db_snapshots
 	@useHours bit = 0,
 	@useMinutes bit = 0,
 	@overwriteExisting bit = 0,

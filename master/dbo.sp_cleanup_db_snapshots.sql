@@ -4,7 +4,7 @@ SET ANSI_NULLS ON;
 SET QUOTED_IDENTIFIER ON;
 GO
 
-CREATE PROCEDURE dbo.sp_cleanup_db_snapshots
+ALTER PROCEDURE dbo.sp_cleanup_db_snapshots
     @maxAgeInHours int = 12
   , @maxSizeOnDiskInMegabytes bigint = 10240
   , @maxSpaceUsedPercent decimal(5, 2) = 1.00
