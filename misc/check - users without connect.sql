@@ -42,7 +42,7 @@ BEGIN
 		SET @sql = CONCAT(''USE '', QUOTENAME(DB_NAME()), ''; GRANT CONNECT TO '', QUOTENAME(@name), '';'')
 		PRINT @sql
 		
-		EXEC(@sql)
+		--EXEC(@sql)
 	END
 
 END

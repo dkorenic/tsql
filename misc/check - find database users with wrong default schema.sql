@@ -35,7 +35,7 @@ BEGIN
 		SET @sql = CONCAT(''USE '', QUOTENAME(DB_NAME()), ''; ALTER USER '', QUOTENAME(@name), '' WITH DEFAULT_SCHEMA=[dbo]'')
 		PRINT @sql
 		
-		EXEC(@sql)
+		--EXEC(@sql)
 		
 	END
 END
