@@ -219,7 +219,7 @@ SET @sql
                     WHEN @includePlan = 1 THEN
                         N'
 					--outer APPLY sys.dm_exec_query_plan(der.plan_handle) AS EQP
-					outer APPLY sys.dm_exec_text_query_plan(der.plan_handle,der.statement_start_offset,der.statement_end_offset) AS EQP'
+					outer APPLY sys.dm_exec_text_query_plan(der.plan_handle,der.statement_start_offset,der.statement_end_offset) AS eqp'
                     ELSE
                         N''
                 END
