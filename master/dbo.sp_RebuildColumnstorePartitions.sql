@@ -1,17 +1,29 @@
 USE master
 GO
 
+IF OBJECT_DEFINITION(OBJECT_ID('dbo.sp_RebuildColumnstorePartitions')) IS NOT NULL DROP PROCEDURE dbo.sp_RebuildColumnstorePartitions;
+GO
 
 SET QUOTED_IDENTIFIER ON;
 SET ANSI_NULLS ON;
 GO
-ALTER PROC dbo.sp_RebuildColumnstorePartitions
+CREATE PROC dbo.sp_RebuildColumnstorePartitions
     @tableName sysname = NULL
   , @steps int = 1
   , @dryRun bit = 0
 AS
 
-DECLARE @sql nvarchar(MAX) = '
+WHILE @steps > 0
+BEGIN
+    SET @steps -= 1;
+
+    DECLARE @partition_number int
+          , @objectId         int
+          , @indexId          int
+          , @indexName        sysname
+          , @partitioned      bit
+          , @rc               int = 0;
+
     SELECT TOP 1
         @partition_number = t.partition_number
       , @objectId         = t.object_id
@@ -26,12 +38,12 @@ DECLARE @sql nvarchar(MAX) = '
             ON i.data_space_id = ps.data_space_id
     WHERE (
               t.object_id = OBJECT_ID(@tableName)
-              OR NULLIF(LTRIM(RTRIM(@tableName)), '''') IS NULL
+              OR NULLIF(LTRIM(RTRIM(@tableName)), '') IS NULL
           )
           AND
           (
-              t.state_desc != ''COMPRESSED''
-              OR t.transition_to_compressed_state_desc != ''INDEX_BUILD''
+              t.state_desc != 'COMPRESSED'
+              OR t.transition_to_compressed_state_desc != 'INDEX_BUILD'
               OR t.deleted_rows > 0
           )
     /*
@@ -43,22 +55,7 @@ DECLARE @sql nvarchar(MAX) = '
           )
 		  */
     ORDER BY t.created_time;
-    SET @rc = @@ROWCOUNT;';
-
-WHILE @steps > 0
-BEGIN
-    SET @steps -= 1;
-
-    DECLARE @partition_number int
-          , @objectId         int
-          , @indexId          int
-          , @indexName        sysname
-          , @partitioned      bit
-          , @rc               int = 0;
-
-	--PRINT @sql
-
-	EXEC sys.sp_executesql @sql, N'@tableName sysname, @partition_number int OUT, @objectId int OUT, @indexId int OUT, @indexName sysname OUT, @partitioned bit OUT, @rc int OUT', @tableName, @partition_number OUT, @objectId OUT, @indexId OUT, @indexName OUT, @partitioned OUT, @rc OUT
+    SET @rc = @@ROWCOUNT;
 
     IF @rc = 0
         BREAK;
@@ -76,3 +73,5 @@ END;
 
 GO
 
+EXEC sys.sp_MS_marksystemobject N'dbo.sp_RebuildColumnstorePartitions';
+GO
