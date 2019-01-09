@@ -1,15 +1,3 @@
-:SETVAR folder XXX:\backup
-:SETVAR IsSqlCmdEnabled "True"
-
-GO
-SET NOEXEC OFF
-IF N'$(IsSqlCmdEnabled)' NOT LIKE N'True'
-BEGIN
-    PRINT N'SQLCMD mode must be enabled to successfully execute this script.';
-    PRINT N'Disabling script execution.';
-    SET NOEXEC ON;
-END;
-GO
 /*
 
 SQL Server Maintenance Solution - SQL Server 2005, SQL Server 2008, SQL Server 2008 R2, SQL Server 2012, SQL Server 2014, SQL Server 2016, and SQL Server 2017
@@ -42,11 +30,11 @@ DECLARE @OutputFileDirectory nvarchar(max)
 DECLARE @LogToTable nvarchar(max)
 DECLARE @ErrorMessage nvarchar(max)
 
-SET @CreateJobs          = 'Y'          -- Specify whether jobs should be created.
-SET @BackupDirectory     = N'$(folder)' -- Specify the backup root directory.
-SET @CleanupTime         = 24         -- Time in hours, after which backup files are deleted. If no time is specified, then no backup files are deleted.
-SET @OutputFileDirectory = N'$(folder)'         -- Specify the output file directory. If no directory is specified, then the SQL Server error log directory is used.
-SET @LogToTable          = 'Y'          -- Log commands to a table.
+SET @CreateJobs          = 'Y'										-- Specify whether jobs should be created.
+SET @BackupDirectory     = CONCAT('\\', @@SERVERNAME, '\Backup')	-- Specify the backup root directory.
+SET @CleanupTime         = 24										-- Time in hours, after which backup files are deleted. If no time is specified, then no backup files are deleted.
+SET @OutputFileDirectory = CONCAT('\\', @@SERVERNAME, '\Backup')	-- Specify the output file directory. If no directory is specified, then the SQL Server error log directory is used.
+SET @LogToTable          = 'Y'										-- Log commands to a table.
 
 IF IS_SRVROLEMEMBER('sysadmin') = 0 AND NOT (DB_ID('rdsadmin') IS NOT NULL AND SUSER_SNAME(0x01) = 'rdsa')
 BEGIN
